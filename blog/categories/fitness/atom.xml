@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Fitness | A Little Bit of Nothing]]></title>
+  <link href="http://cbadke.github.io/blog/categories/fitness/atom.xml" rel="self"/>
+  <link href="http://cbadke.github.io/"/>
+  <updated>2014-11-23T10:42:02-07:00</updated>
+  <id>http://cbadke.github.io/</id>
+  <author>
+    <name><![CDATA[Curtis Badke]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Zombies, Run!]]></title>
+    <link href="http://cbadke.github.io/blog/2012/04/29/zombies-run/"/>
+    <updated>2012-04-29T08:58:52-06:00</updated>
+    <id>http://cbadke.github.io/blog/2012/04/29/zombies-run</id>
+    <content type="html"><![CDATA[<p>I ran the first mission from Zombies, Run! and I absolutely loved it!</p>
+
+<p>If you want to do some running but you’re tired of worrying about pacing,
+distance, time etc give this game a try. You pop in your headphones, tie on
+your shoes and don’t get caught! The game guides you through a story and from
+time to time zombie hordes show up to eat you and force you to sprint. It’s a
+slick little hook to do sprint/interval training and it’s a blast!</p>
+]]></content>
+  </entry>
+  
+</feed>

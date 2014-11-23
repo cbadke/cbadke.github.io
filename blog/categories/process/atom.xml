@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Process | A Little Bit of Nothing]]></title>
+  <link href="http://cbadke.github.io/blog/categories/process/atom.xml" rel="self"/>
+  <link href="http://cbadke.github.io/"/>
+  <updated>2014-11-23T10:42:02-07:00</updated>
+  <id>http://cbadke.github.io/</id>
+  <author>
+    <name><![CDATA[Curtis Badke]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Are Checklists Bad?]]></title>
+    <link href="http://cbadke.github.io/blog/2011/12/13/are-checklists-bad/"/>
+    <updated>2011-12-13T20:48:22-07:00</updated>
+    <id>http://cbadke.github.io/blog/2011/12/13/are-checklists-bad</id>
+    <content type="html"><![CDATA[<p>Checklists. Just the word warms the hearts of safety officers around the world.
+Who doesn’t love a clean concise list of things to do with those inviting little
+square boxes just waiting for a pen to delicately mark the items as complete?</p>
+
+<p>Before you go on a trip:</p>
+
+<ul>
+<li>Filled the car with gas? Check!</li>
+<li>Went to the bathroom so we don’t have to stop in 3 minutes? Check!</li>
+<li>Are you SURE?….. gimme a minute….. Check!</li>
+<li>Packed some awesome snacks? Check!</li>
+</ul>
+
+
+<p>That’s great and all but as I see it checklists have three problems when they
+start popping up beyond your daily chore list:</p>
+
+<ol>
+<li>Nobody cares</li>
+<li>Nobody understands</li>
+<li>People will game</li>
+</ol>
+
+
+<h1>Nobody Cares</h1>
+
+<p>It is not uncommon for people in business to get handed a list of items to do
+when they work through process X.</p>
+
+<p>In a previous workplace there were issues with the process of checking in code
+having to do with some brittle system we were using at the time. A checklist of
+commonly missed tasks was compiled and distributed through to all of the
+developers. The development processes were also changed so that each developer
+was required to go through the checklist every time they checked code in.</p>
+
+<p>As the checklist was reviewed with the developers you could almost feel the eyes
+rolling. The list was not long but it was a little tedious and the developers
+felt that each item was so <em>obvious</em> and simple that we were almost insulted
+that someone would present us with a little worksheet that we were supposed to
+work through every time we submitted code. Ironically, if you asked any one of
+those developers if they had made a mistake that was listed on the list we would
+each have to admit that we had.</p>
+
+<p>Although the checklist was thorough and everyone could admit that it would have
+helped them at some point, every copy of that checklist was dutifully pinned to
+a cubicle wall and completely ignored. Nobody cared about the list because they
+felt that they already knew how to do everything listed or they thought it was
+too tedious to go through the process of performing the tasks listed. The intent
+of the list was to fix some very real problems but nobody cared.</p>
+
+<h1>Nobody Understands</h1>
+
+<p>Checklists have their place and are a great way to make sure that you take care
+of small items that are clearly defined. Airline pilots have all sorts of neat
+little checklists that keep the planes in the sky. The tricky bit is the clearly
+defined part.</p>
+
+<p>Let’s return to the pre-vacation list from the previous section:</p>
+
+<ul>
+<li>Filled the car with gas? Check!</li>
+<li>Went to the bathroom so we don’t have to stop in 3 minutes? Check!</li>
+<li>Are you SURE?….. gimme a minute….. Check!</li>
+<li>Packed some awesome snacks? Check!</li>
+</ul>
+
+
+<p>Do you notice anything ambiguous? Dollars to donuts this checklist will give you
+warm fuzzy feelings as your pull out of the driveway until the crushing moment
+when little Jimmy asks for his apple slices and peanut butter. You DID pack
+little Jimmy’s apple slices and peanut butter right?…. RIGHT?!?</p>
+
+<p>How could you miss the apple slices? You had a checklist! And you even went
+through and checked it!</p>
+
+<p>Checklists tend to turn off the free thinking part of the brain. In fact, that
+is kind of the point and why things like inspections use them. Regulatory
+checklists tend to be a list of rules. If the things being inspected follows the
+rules then it gets a check. Pretty simple stuff.</p>
+
+<p>Checklists like the vacation list above are not like a regulatory checklist.
+They are created to serve as reminders to someone to do something more complex
+than what is actually listed. I find that when faced with a checklist people
+(including myself) tend to stop thinking about the <em>intent</em> of what is on that
+list and get focused on getting to make the checkmark. I’m sure when you wrote
+on the list ‘Pack awesome snacks’ you thought that you would go back and
+consider all the travelers in your packing, but when you got to actually packing
+you instead pack some walnuts and thought to yourself ‘Walnuts are pretty damn
+awesome. Checkity-check-check-check!’</p>
+
+<p>The list failed because the intent gets lost in the single minded focus of task
+completion.</p>
+
+<h1>People Will Game</h1>
+
+<p>Checklist based performance analysis is one of the best ways I’ve seen to get
+people to game a system rather than actually doing better at whatever is being
+analyzed.</p>
+
+<p>This is almost a conscious version of people ignoring the intent of checklist
+items in the blind draw to get a check mark. The big difference is that now
+people are extrinsically motivated to become single mindedly focussed on getting
+things checked off in the fastest, easiest and probably most ineffectual way
+possible.</p>
+
+<p>All I can say is don’t do this and try to stay out of situations where people do
+it to you.</p>
+
+<h1>So What?</h1>
+
+<p>If you work anywhere for long enough you will likely either be handed an
+exciting new checklist to work through in your job or be tempted to make such a
+document yourself because people keep making mistakes with some process.</p>
+
+<p>I believe that checklists should be avoided as a way to make sure people are
+doing the things you want them to do. They will be ignored or gamed most of the
+time and whoever is giving out the list is likely to be resented for their
+trouble.</p>
+
+<p>The intent of lists as a process technique makes sense. You have a list of
+things you want the process to accomplish.</p>
+
+<p>If the list is really simple and tedious then automate it. Computers are really
+good at doing really tedious stuff so that the humans can eat jellybeans and
+worry about difficult problems. Computers won’t get bored or distracted half way
+through and they will probably (hopefully?) do the task much faster.</p>
+
+<p>If the list items are more complicated than a simple script will allow and/or
+requires human involvement then reformat your process to an activity of some
+sort rather than a checklist. I have to flesh out this idea but I think in many
+cases you can rethink what you are trying to do away from a list. Maybe this is
+just manipulative tap dancing but I think people will probably respond better.</p>
+
+<p>Also, focus in getting people to understand <em>why</em> it is important to do these
+tasks. If you can get buy in on the why then you will get better involvement in
+the how. In many cases you will not only get better coverage of your items but
+you will probably get better quality of work completed. Heck, in explaining the
+why you might even realize you don’t have to do that task in the first place!</p>
+]]></content>
+  </entry>
+  
+</feed>

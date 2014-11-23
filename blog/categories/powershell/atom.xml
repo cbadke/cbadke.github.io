@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Powershell | A Little Bit of Nothing]]></title>
+  <link href="http://cbadke.github.io/blog/categories/powershell/atom.xml" rel="self"/>
+  <link href="http://cbadke.github.io/"/>
+  <updated>2014-11-23T10:42:02-07:00</updated>
+  <id>http://cbadke.github.io/</id>
+  <author>
+    <name><![CDATA[Curtis Badke]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Adventures With PowerShell: Episode 1 – 64 vs 32 Bit]]></title>
+    <link href="http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/"/>
+    <updated>2013-02-09T08:05:05-07:00</updated>
+    <id>http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit</id>
+    <content type="html"><![CDATA[<p>I have been working to learn/use more Powershell at work and as with any
+new language/technology the learning process has been fraught with strange
+gotchas and mysteries. For example, my friend had trouble with Powershell
+stopping processing because <em><a href="http://fitzse.wordpress.com/2013/02/04/powershell-console-select-mode/">he was clicking wrong</a></em>!</p>
+
+<p>My most recent learning adventure was that the contents of certain system
+directories may not be what they appear! I was goofing around with learning how
+to install Powershell modules into the global location (making the module
+accessible to all users). The typical advice you get on this matter is simply
+to drop your module into <code>C:\Windows\System32\WindowsPowerShell\v1.0\Modules</code> and
+you will be able to <code>Import-Module</code> to your hearts content.</p>
+
+<p>This worked great for me until I tried to load my module with the x86 build of
+PowerShell. The module could not be found.</p>
+
+<p>Here is the file listing for the global module location from Windows Explorer.</p>
+
+<p><img src="/images/blog/2013-02-09/folder.png" alt="Windows Explorer system32 Listing" /></p>
+
+<p>And here is the file listing for the global module location as seen by the x64
+PowerShell.</p>
+
+<p><img src="/images/blog/2013-02-09/x64.png" alt="x64 Powershell system32 Listing" /></p>
+
+<p>And here is the file listing for the global module location as seen by the x86
+PowerShell.</p>
+
+<p><img src="/images/blog/2013-02-09/x86.png" alt="x86 Powershell system32 Listing" /></p>
+
+<p>Same file location, different contents. WAT?</p>
+
+<p>After much poking around I finally figured out that when you are running the
+x86 build of Powershell, the contents of
+<code>C:\Windows\System32\WindowsPowerShell\v1.0\Modules</code> are <em>actually</em> the contents of
+<code>C:\Windows\SysWOW64\WindowsPowerShell\v1.0\Modules</code>.</p>
+
+<p>Unbeknownst to me at the time, the developers of PowerShell were actually
+trying to help me out with this decision. Basically, the remapping of the file
+system allows you to always use the same pathing without worrying about which
+version of PowerShell you are running BUT allowing the system to segregate
+modules that will only work in x64 environments. The tricky bit is that for
+module authors that want their modules to be available to all versions of
+PowerShell then they must install the module in <em>both</em> locations. Unfortunately,
+this behaviour does not seem to be well documented (or my Google-fu needs
+work).</p>
+
+<p>Good luck with your modules!</p>
+]]></content>
+  </entry>
+  
+</feed>

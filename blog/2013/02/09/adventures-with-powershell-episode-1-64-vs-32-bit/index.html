@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Adventures With PowerShell: Episode 1 – 64 vs 32 Bit - A Little Bit of Nothing</title>
+  <meta name="author" content="Curtis Badke">
+
+  
+  <meta name="description" content="I have been working to learn/use more Powershell at work and as with any
+new language/technology the learning process has been fraught with strange &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="A Little Bit of Nothing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">A Little Bit of Nothing</a></h1>
+  
+    <h2>Rum Induced Ramblings</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:cbadke.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Adventures With PowerShell: Episode 1 – 64 vs 32 Bit</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2013-02-09T08:05:05-07:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>8:05 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I have been working to learn/use more Powershell at work and as with any
+new language/technology the learning process has been fraught with strange
+gotchas and mysteries. For example, my friend had trouble with Powershell
+stopping processing because <em><a href="http://fitzse.wordpress.com/2013/02/04/powershell-console-select-mode/">he was clicking wrong</a></em>!</p>
+
+<p>My most recent learning adventure was that the contents of certain system
+directories may not be what they appear! I was goofing around with learning how
+to install Powershell modules into the global location (making the module
+accessible to all users). The typical advice you get on this matter is simply
+to drop your module into <code>C:\Windows\System32\WindowsPowerShell\v1.0\Modules</code> and
+you will be able to <code>Import-Module</code> to your hearts content.</p>
+
+<p>This worked great for me until I tried to load my module with the x86 build of
+PowerShell. The module could not be found.</p>
+
+<p>Here is the file listing for the global module location from Windows Explorer.</p>
+
+<p><img src="/images/blog/2013-02-09/folder.png" alt="Windows Explorer system32 Listing" /></p>
+
+<p>And here is the file listing for the global module location as seen by the x64
+PowerShell.</p>
+
+<p><img src="/images/blog/2013-02-09/x64.png" alt="x64 Powershell system32 Listing" /></p>
+
+<p>And here is the file listing for the global module location as seen by the x86
+PowerShell.</p>
+
+<p><img src="/images/blog/2013-02-09/x86.png" alt="x86 Powershell system32 Listing" /></p>
+
+<p>Same file location, different contents. WAT?</p>
+
+<p>After much poking around I finally figured out that when you are running the
+x86 build of Powershell, the contents of
+<code>C:\Windows\System32\WindowsPowerShell\v1.0\Modules</code> are <em>actually</em> the contents of
+<code>C:\Windows\SysWOW64\WindowsPowerShell\v1.0\Modules</code>.</p>
+
+<p>Unbeknownst to me at the time, the developers of PowerShell were actually
+trying to help me out with this decision. Basically, the remapping of the file
+system allows you to always use the same pathing without worrying about which
+version of PowerShell you are running BUT allowing the system to segregate
+modules that will only work in x64 environments. The tricky bit is that for
+module authors that want their modules to be available to all versions of
+PowerShell then they must install the module in <em>both</em> locations. Unfortunately,
+this behaviour does not seem to be well documented (or my Google-fu needs
+work).</p>
+
+<p>Good luck with your modules!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Curtis Badke</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2013-02-09T08:05:05-07:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>9</span><span class='date-suffix'>th</span>, <span class='date-year'>2013</span></span> <span class='time'>8:05 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/powershell/'>powershell</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/" data-via="cbadkidrun" data-counturl="http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/04/29/zombies-run/" title="Previous Post: Zombies, Run!">&laquo; Zombies, Run!</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/02/10/make-it-happen/" title="Next Post: Make It Happen!">Make It Happen! &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/31/who-wrote-this-sh-star-t/">Who Wrote This Sh*t?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/12/make-it-happen-part-deux/">Make It Happen – Part Deux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/10/make-it-happen/">Make It Happen!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/">Adventures With PowerShell: Episode 1 – 64 vs 32 Bit</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/04/29/zombies-run/">Zombies, Run!</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/cbadke">@cbadke</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'cbadke',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Curtis Badke -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
