@@ -2,7 +2,7 @@
 layout: page
 title: "about"
 comments: false
-sharing: true
+sharing: false
 footer: true
 ---
 I am a software developer at DevFacto Technologies\* in Edmonton, AB.
