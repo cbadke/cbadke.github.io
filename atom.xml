@@ -2,22 +2,183 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[A Little Bit of Nothing]]></title>
-  <link href="http://cbadke.github.io/atom.xml" rel="self"/>
-  <link href="http://cbadke.github.io/"/>
-  <updated>2014-11-24T21:10:45-07:00</updated>
-  <id>http://cbadke.github.io/</id>
+  <link href="https://curtisbadke.ca/atom.xml" rel="self"/>
+  <link href="https://curtisbadke.ca/"/>
+  <updated>2015-10-18T08:56:27-06:00</updated>
+  <id>https://curtisbadke.ca/</id>
   <author>
     <name><![CDATA[Curtis Badke]]></name>
-    <email><![CDATA[curtis@badkid.ca]]></email>
+    <email><![CDATA[me@curtisbadke.ca]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
   
   <entry>
+    <title type="html"><![CDATA[Fun With Installing Service Bus for Windows]]></title>
+    <link href="https://curtisbadke.ca/blog/2015/10/18/fun-with-installing-service-bus-for-windows/"/>
+    <updated>2015-10-18T07:40:14-06:00</updated>
+    <id>https://curtisbadke.ca/blog/2015/10/18/fun-with-installing-service-bus-for-windows</id>
+    <content type="html"><![CDATA[<p><a href="#conclusion">tl;dr</a></p>
+
+<p>I recently started a toy project that will involve using Azure Service Bus to
+communicate between multiple Azure WebJobs and Cloud Services. I&rsquo;m not a fan of
+doing development against actual live cloud services so I figured I would
+install Service Bus 1.1 for Windows Server on my local dev machine to do my
+development and then deploy a full instance of the application to Azure for
+cloud testing.</p>
+
+<p>I don&rsquo;t like developing against live cloud services because this tends to cause
+collisions among team members (multiple people start posting events for example)
+and there is a risk of publishing cloud credentials into public repositories.</p>
+
+<p>This post will lay out a bunch of roadblocks I ran into with getting Service Bus
+up and running on my local dev machine.</p>
+
+<p>My machine:</p>
+
+<ul>
+<li>Windows 10 installed with AAD user</li>
+<li>VS2015</li>
+<li>Service Bus 1.1</li>
+</ul>
+
+
+<h2><a name="installation"></a>Installation</h2>
+
+<p>Installing Service Bus itself is easy. Just use the Microsoft Web Platform
+Installer. Search for &lsquo;Service Bus&rsquo; and install &lsquo;Windows Azure Pack: Service Bus 1.1&rsquo;.</p>
+
+<p><img src="https://curtisbadke.ca/images/2015-10-18/search-results.png" alt="Search for Service Bus in Platform Installer" /></p>
+
+<h2>Farm Creation</h2>
+
+<p>Configuration is where I ran into my first problems. My organization uses
+Azure AD as a mirror of our main domain AD. Windows 10 gives the option during
+installation to just login with your AAD account. This is very convenient but
+leaves your computer in a strange state.</p>
+
+<p>When you use AAD to create your user account your machine isn&rsquo;t actually connected
+to your domain. You have a Workgroup machine but are logging in with what <em>feels</em>
+like a domain account.</p>
+
+<p>Service Bus did not react well to this situation. When creating a new farm using
+<code>New-SBFarm</code> I would receive the error:</p>
+
+<blockquote><p>New-SBFarm : Unable to cast object of type &lsquo;System.DirectoryServices.AccountManagement.GroupPrincipal&rsquo; to type &lsquo;System.DirectoryServices.AccountManagement.UserPrincipal&rsquo;.</p></blockquote>
+
+<p>This error seems to be related to the mismatch of my user (AAD/Domain) to my
+machine which is tied to a Workgroup. According to the <a href="https://msdn.microsoft.com/en-us/library/dn441409.aspx">System Requirements</a>,
+my options were to create a local admin account OR join my machine to a domain
+and log in with a domain user with admin rights. I opted to add a local user and
+farm creation worked fine.</p>
+
+<p>I also found that I was not able to grant any sort of permissions to my
+Service Bus farm and namespace to my AAD user. If you&rsquo;re on a workgroup you&rsquo;ll
+need to use local users for pretty much all interactions with the Bus.</p>
+
+<h2><a name="running"></a>Starting Service Bus</h2>
+
+<p>In order to actually get Service Bus up and running the next step is to add
+your local machine to the farm using <code>New-SBHost</code>. During this step I found that
+my Service Bus Gateway would never actually start. Digging into the Service Bus
+logs in the Event Viewer (Applications and Local Services -> Microsoft -> Microsoft-ServiceBus -> Operational)
+I found an exception that the assembly Microsoft.Cloud.Common.AzureStorage could
+not be loaded.</p>
+
+<blockquote><p>Service Bus Gateway service failed to start, retry count 3.
+Exception message: An error occurred creating the configuration section handler for namespacePolicyDataStoreFactory:
+Could not load file or assembly &lsquo;Microsoft.Cloud.Common.AzureStorage, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4fe77f22fa8374f3&rsquo; or one of its dependencies.</p></blockquote>
+
+<p>After some searching I stumbled upon this <a href="https://github.com/matthewcanty/Microsoft.Cloud.Common.AzureStorage.FAKE.dll">GitHub repo</a>.
+Apparently, if you install VS2015 you will run into a missing DLL problem because
+Service Bus for Windows does not ship with this assembly. Normally this isn&rsquo;t a
+problem but a change to mscorlib now causes the assembly to be loaded even though
+the code is not actually used.</p>
+
+<p>The solution is to install a fake version of the dll which contains the types
+that are being loaded. I&rsquo;m not terribly excited about registering some random
+person&rsquo;s dlls into my system but I disassembled the fake assembly and it truly
+does created a single empty class to get around a type reference issue. Because
+the type isn&rsquo;t actually <em>used</em> the lack of implementation is not an issue.</p>
+
+<p>I downloaded and installed the dll as described in the repo and Service Bus
+services were up and running.</p>
+
+<h2><a name="hello-world"></a>Hello World?</h2>
+
+<p>Service Bus is running, you&rsquo;ve created a namespace, we should be able to try getting
+two processes passing messages, right? Well, maybe.</p>
+
+<p>It was during my &lsquo;hello world&rsquo; testing that I ran into the most concerning of
+the issues with setting up a local Service Bus as a dev time replacement for Azure.</p>
+
+<p>I followed the typical Service Bus examples and was met with an exception:</p>
+
+<blockquote><p>The remote server returned an error: (400) Bad Request. The api-version in the query string is not supported. Either remove it from the Uri or use one of &lsquo;201 2-03,2012-08,2013-04,2013-07&rsquo;</p></blockquote>
+
+<p>When you communicate with Service Bus you will typically install the Nuget
+package WindowsAzure.ServiceBus. Service Bus uses a numbered API version that
+is verified on connection. It seems Service Bus for Windows 1.1 is pretty out of
+date compared to what is available in Azure proper. I was forced to downgrade
+the WindowsAzure.ServiceBus package all the way back to 2.1.4.0 before I could
+establish a connection with my local Bus.</p>
+
+<p>I&rsquo;m not sure what the ramifications will be to using such an old version of the
+Service Bus API when it comes time to deploy my app into Azure. Documentation
+says the Azure instance supports all the client versions back to the beginning
+of time so presumably if I&rsquo;m not trying to use any of the fancy new features I
+should be okay but time will tell.</p>
+
+<p>I look forward to when Microsoft publishes a new on-prem Service Bus that more
+closely matches what is actually running in Azure.</p>
+
+<h2><a name="certificates"></a>Certificate Fun</h2>
+
+<p>If you got as far as getting Service Bus running and installed the right client
+libraries and were met with TLS/SSL security errors you&rsquo;ve probably run into
+an issue of certificates.</p>
+
+<blockquote><p>System.UnauthorizedAccessException was unhandled
+Message: An unhandled exception of type &lsquo;System.UnauthorizedAccessException&rsquo; occurred in Microsoft.ServiceBus.dll
+Additional information: The token provider was unable to provide a security token while accessing &lsquo;<a href="https://localhost:9355/yournamespace/$STS/Windows/">https://localhost:9355/yournamespace/$STS/Windows/</a>&rsquo;. Token provider returned message: &lsquo;The underlying connection was closed: Could not establish trust relationship for the SSL/TLS secure channel.&rsquo;.</p></blockquote>
+
+<p>When you add your machine as a Service Bus host with <code>New-SBHost</code>, the
+configuration script will generate new SSL certificates for your machine. These
+certificates will be tied to your hostname and if you are on a domain I think
+they are actually made for you fully qualified domain name. This means that you
+cannot use other names (like localhost) to connect to your Service Bus. The
+certificate names won&rsquo;t match and the trust connection will fail.</p>
+
+<h2><a name="conclusion"></a>Conclusion</h2>
+
+<p>Running Service Bus locally for dev is possible but not without configuration
+annoyances. I haven&rsquo;t used it enough to know if there are any actual draw backs
+once you have it working and it comes time to deploy to Azure. Perhaps another
+post will provide some followup.</p>
+
+<p>Things you&rsquo;ll need to be aware of for local Service Bus installation:</p>
+
+<ul>
+<li>If you are in a workgroup you must use local users, if you are in a
+domain you must use domain users. If you are on Windows 10 with an AAD user
+your machine is probably in a workgroup. <a href="https://msdn.microsoft.com/en-us/library/dn441409.aspx">reference</a></li>
+<li>If you have VS 2015, you need to install a <a href="https://github.com/matthewcanty/Microsoft.Cloud.Common.AzureStorage.FAKE.dll">fake Microsoft.Cloud.Common.AzureStorage</a>
+assembly.</li>
+<li>You must use Nuget package WindowsAzure.ServiceBus 2.1.4.0 or <em>older</em>.</li>
+<li>You must address your Service Bus connections using your full machine name
+not a short name or something like localhost</li>
+</ul>
+
+
+<p>Hopefully this saves someone hours of frustration.</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Who Wrote This Sh*t?]]></title>
-    <link href="http://cbadke.github.io/blog/2014/07/31/who-wrote-this-sh-star-t/"/>
+    <link href="https://curtisbadke.ca/blog/2014/07/31/who-wrote-this-sh-star-t/"/>
     <updated>2014-07-31T11:39:33-06:00</updated>
-    <id>http://cbadke.github.io/blog/2014/07/31/who-wrote-this-sh-star-t</id>
+    <id>https://curtisbadke.ca/blog/2014/07/31/who-wrote-this-sh-star-t</id>
     <content type="html"><![CDATA[<p>Through countless hallways in countless software shops you can hear the words,
 “Who wrote this shit? This is crap. What an idiot.”</p>
 
@@ -79,19 +240,19 @@ framed print of your tweet to help me never forget.</p>
   
   <entry>
     <title type="html"><![CDATA[Make It Happen – Part Deux]]></title>
-    <link href="http://cbadke.github.io/blog/2013/02/12/make-it-happen-part-deux/"/>
+    <link href="https://curtisbadke.ca/blog/2013/02/12/make-it-happen-part-deux/"/>
     <updated>2013-02-12T10:21:37-07:00</updated>
-    <id>http://cbadke.github.io/blog/2013/02/12/make-it-happen-part-deux</id>
+    <id>https://curtisbadke.ca/blog/2013/02/12/make-it-happen-part-deux</id>
     <content type="html"><![CDATA[<p>You are good enough.</p>
 
 <p>After writing my previous post I kept thinking about the reasons people hold
 back from going after their goals and aspirations. Then I saw this:</p>
 
-<p><a href="https://twitter.com/bjeanes/status/300827620411584512"><img src="http://cbadke.github.io/images/blog/2013-02-12/tweet.png" alt="If you care about what you do, its hard not to feel inadequate. @bjeanes" /></a></p>
+<p><a href="https://twitter.com/bjeanes/status/300827620411584512"><img src="https://curtisbadke.ca/images/blog/2013-02-12/tweet.png" alt="If you care about what you do, its hard not to feel inadequate. @bjeanes" /></a></p>
 
 <p>And the very next morning a friend of mine posted this:</p>
 
-<p><a href="https://twitter.com/RealScottWeller/status/300929213186334721/photo/1"><img src="http://cbadke.github.io/images/blog/2013-02-12/failure.jpg" alt="Failure can destroy you or make you work harder." /></a></p>
+<p><a href="https://twitter.com/RealScottWeller/status/300929213186334721/photo/1"><img src="https://curtisbadke.ca/images/blog/2013-02-12/failure.jpg" alt="Failure can destroy you or make you work harder." /></a></p>
 
 <p>Of course! Fear! Fear of inadequacy, of failure, of embarrassment. Fear can be
 a paralyzing force for many people.</p>
@@ -120,9 +281,9 @@ you can do too!</p>
   
   <entry>
     <title type="html"><![CDATA[Make It Happen!]]></title>
-    <link href="http://cbadke.github.io/blog/2013/02/10/make-it-happen/"/>
+    <link href="https://curtisbadke.ca/blog/2013/02/10/make-it-happen/"/>
     <updated>2013-02-10T10:17:02-07:00</updated>
-    <id>http://cbadke.github.io/blog/2013/02/10/make-it-happen</id>
+    <id>https://curtisbadke.ca/blog/2013/02/10/make-it-happen</id>
     <content type="html"><![CDATA[<p>Nobody owes you anything.</p>
 
 <p>I could probably leave this post at that but it’s kind of a downer and I prefer
@@ -168,9 +329,9 @@ might be surprised at who gives you a helping hand.</p>
   
   <entry>
     <title type="html"><![CDATA[Adventures With PowerShell: Episode 1 – 64 vs 32 Bit]]></title>
-    <link href="http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/"/>
+    <link href="https://curtisbadke.ca/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/"/>
     <updated>2013-02-09T08:05:05-07:00</updated>
-    <id>http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit</id>
+    <id>https://curtisbadke.ca/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit</id>
     <content type="html"><![CDATA[<p>I have been working to learn/use more Powershell at work and as with any
 new language/technology the learning process has been fraught with strange
 gotchas and mysteries. For example, my friend had trouble with Powershell
@@ -188,17 +349,17 @@ PowerShell. The module could not be found.</p>
 
 <p>Here is the file listing for the global module location from Windows Explorer.</p>
 
-<p><img src="http://cbadke.github.io/images/blog/2013-02-09/folder.png" alt="Windows Explorer system32 Listing" /></p>
+<p><img src="https://curtisbadke.ca/images/blog/2013-02-09/folder.png" alt="Windows Explorer system32 Listing" /></p>
 
 <p>And here is the file listing for the global module location as seen by the x64
 PowerShell.</p>
 
-<p><img src="http://cbadke.github.io/images/blog/2013-02-09/x64.png" alt="x64 Powershell system32 Listing" /></p>
+<p><img src="https://curtisbadke.ca/images/blog/2013-02-09/x64.png" alt="x64 Powershell system32 Listing" /></p>
 
 <p>And here is the file listing for the global module location as seen by the x86
 PowerShell.</p>
 
-<p><img src="http://cbadke.github.io/images/blog/2013-02-09/x86.png" alt="x86 Powershell system32 Listing" /></p>
+<p><img src="https://curtisbadke.ca/images/blog/2013-02-09/x86.png" alt="x86 Powershell system32 Listing" /></p>
 
 <p>Same file location, different contents. WAT?</p>
 
@@ -223,9 +384,9 @@ work).</p>
   
   <entry>
     <title type="html"><![CDATA[Zombies, Run!]]></title>
-    <link href="http://cbadke.github.io/blog/2012/04/29/zombies-run/"/>
+    <link href="https://curtisbadke.ca/blog/2012/04/29/zombies-run/"/>
     <updated>2012-04-29T08:58:52-06:00</updated>
-    <id>http://cbadke.github.io/blog/2012/04/29/zombies-run</id>
+    <id>https://curtisbadke.ca/blog/2012/04/29/zombies-run</id>
     <content type="html"><![CDATA[<p>I ran the first mission from Zombies, Run! and I absolutely loved it!</p>
 
 <p>If you want to do some running but you’re tired of worrying about pacing,
@@ -238,9 +399,9 @@ slick little hook to do sprint/interval training and it’s a blast!</p>
   
   <entry>
     <title type="html"><![CDATA[NCrunch Is Awesome!]]></title>
-    <link href="http://cbadke.github.io/blog/2011/12/16/ncrunch-is-awesome/"/>
+    <link href="https://curtisbadke.ca/blog/2011/12/16/ncrunch-is-awesome/"/>
     <updated>2011-12-16T07:55:53-07:00</updated>
-    <id>http://cbadke.github.io/blog/2011/12/16/ncrunch-is-awesome</id>
+    <id>https://curtisbadke.ca/blog/2011/12/16/ncrunch-is-awesome</id>
     <content type="html"><![CDATA[<p>If you are a C# developer, go try out NCrunch for your continuous testing.</p>
 
 <p>NCrunch will automatically run your test suite as you modify your files. You
@@ -263,9 +424,9 @@ it sound like there might be something to watch out for there.</p>
   
   <entry>
     <title type="html"><![CDATA[Are Checklists Bad?]]></title>
-    <link href="http://cbadke.github.io/blog/2011/12/13/are-checklists-bad/"/>
+    <link href="https://curtisbadke.ca/blog/2011/12/13/are-checklists-bad/"/>
     <updated>2011-12-13T20:48:22-07:00</updated>
-    <id>http://cbadke.github.io/blog/2011/12/13/are-checklists-bad</id>
+    <id>https://curtisbadke.ca/blog/2011/12/13/are-checklists-bad</id>
     <content type="html"><![CDATA[<p>Checklists. Just the word warms the hearts of safety officers around the world.
 Who doesn’t love a clean concise list of things to do with those inviting little
 square boxes just waiting for a pen to delicately mark the items as complete?</p>

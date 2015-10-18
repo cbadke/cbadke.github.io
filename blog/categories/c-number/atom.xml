@@ -2,22 +2,22 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: C# | A Little Bit of Nothing]]></title>
-  <link href="http://cbadke.github.io/blog/categories/c-number/atom.xml" rel="self"/>
-  <link href="http://cbadke.github.io/"/>
-  <updated>2014-11-24T21:10:45-07:00</updated>
-  <id>http://cbadke.github.io/</id>
+  <link href="https://curtisbadke.ca/blog/categories/c-number/atom.xml" rel="self"/>
+  <link href="https://curtisbadke.ca/"/>
+  <updated>2015-10-18T08:56:27-06:00</updated>
+  <id>https://curtisbadke.ca/</id>
   <author>
     <name><![CDATA[Curtis Badke]]></name>
-    <email><![CDATA[curtis@badkid.ca]]></email>
+    <email><![CDATA[me@curtisbadke.ca]]></email>
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
   
   <entry>
     <title type="html"><![CDATA[NCrunch Is Awesome!]]></title>
-    <link href="http://cbadke.github.io/blog/2011/12/16/ncrunch-is-awesome/"/>
+    <link href="https://curtisbadke.ca/blog/2011/12/16/ncrunch-is-awesome/"/>
     <updated>2011-12-16T07:55:53-07:00</updated>
-    <id>http://cbadke.github.io/blog/2011/12/16/ncrunch-is-awesome</id>
+    <id>https://curtisbadke.ca/blog/2011/12/16/ncrunch-is-awesome</id>
     <content type="html"><![CDATA[<p>If you are a C# developer, go try out NCrunch for your continuous testing.</p>
 
 <p>NCrunch will automatically run your test suite as you modify your files. You

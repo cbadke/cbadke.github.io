@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Fun With Installing Service Bus for Windows - A Little Bit of Nothing</title>
+  <meta name="author" content="Curtis Badke">
+
+  
+  <meta name="description" content="tl;dr I recently started a toy project that will involve using Azure Service Bus to
+communicate between multiple Azure WebJobs and Cloud Services. I& &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="https://curtisbadke.ca/blog/2015/10/18/fun-with-installing-service-bus-for-windows">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="A Little Bit of Nothing" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">A Little Bit of Nothing</a></h1>
+  
+    <h2>Ramblings of a madman</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:curtisbadke.ca" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/pair">Pair With Me</a></li>
+  <li><a href="/about">About</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Fun With Installing Service Bus for Windows</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-10-18T07:40:14-06:00'><span class='date'>October 18, 2015</span> <span class='time'>7:40 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><a href="#conclusion">tl;dr</a></p>
+
+<p>I recently started a toy project that will involve using Azure Service Bus to
+communicate between multiple Azure WebJobs and Cloud Services. I&rsquo;m not a fan of
+doing development against actual live cloud services so I figured I would
+install Service Bus 1.1 for Windows Server on my local dev machine to do my
+development and then deploy a full instance of the application to Azure for
+cloud testing.</p>
+
+<p>I don&rsquo;t like developing against live cloud services because this tends to cause
+collisions among team members (multiple people start posting events for example)
+and there is a risk of publishing cloud credentials into public repositories.</p>
+
+<p>This post will lay out a bunch of roadblocks I ran into with getting Service Bus
+up and running on my local dev machine.</p>
+
+<p>My machine:</p>
+
+<ul>
+<li>Windows 10 installed with AAD user</li>
+<li>VS2015</li>
+<li>Service Bus 1.1</li>
+</ul>
+
+
+<h2><a name="installation"></a>Installation</h2>
+
+<p>Installing Service Bus itself is easy. Just use the Microsoft Web Platform
+Installer. Search for &lsquo;Service Bus&rsquo; and install &lsquo;Windows Azure Pack: Service Bus 1.1&rsquo;.</p>
+
+<p><img src="/images/2015-10-18/search-results.png" alt="Search for Service Bus in Platform Installer" /></p>
+
+<h2>Farm Creation</h2>
+
+<p>Configuration is where I ran into my first problems. My organization uses
+Azure AD as a mirror of our main domain AD. Windows 10 gives the option during
+installation to just login with your AAD account. This is very convenient but
+leaves your computer in a strange state.</p>
+
+<p>When you use AAD to create your user account your machine isn&rsquo;t actually connected
+to your domain. You have a Workgroup machine but are logging in with what <em>feels</em>
+like a domain account.</p>
+
+<p>Service Bus did not react well to this situation. When creating a new farm using
+<code>New-SBFarm</code> I would receive the error:</p>
+
+<blockquote><p>New-SBFarm : Unable to cast object of type &lsquo;System.DirectoryServices.AccountManagement.GroupPrincipal&rsquo; to type &lsquo;System.DirectoryServices.AccountManagement.UserPrincipal&rsquo;.</p></blockquote>
+
+<p>This error seems to be related to the mismatch of my user (AAD/Domain) to my
+machine which is tied to a Workgroup. According to the <a href="https://msdn.microsoft.com/en-us/library/dn441409.aspx">System Requirements</a>,
+my options were to create a local admin account OR join my machine to a domain
+and log in with a domain user with admin rights. I opted to add a local user and
+farm creation worked fine.</p>
+
+<p>I also found that I was not able to grant any sort of permissions to my
+Service Bus farm and namespace to my AAD user. If you&rsquo;re on a workgroup you&rsquo;ll
+need to use local users for pretty much all interactions with the Bus.</p>
+
+<h2><a name="running"></a>Starting Service Bus</h2>
+
+<p>In order to actually get Service Bus up and running the next step is to add
+your local machine to the farm using <code>New-SBHost</code>. During this step I found that
+my Service Bus Gateway would never actually start. Digging into the Service Bus
+logs in the Event Viewer (Applications and Local Services -> Microsoft -> Microsoft-ServiceBus -> Operational)
+I found an exception that the assembly Microsoft.Cloud.Common.AzureStorage could
+not be loaded.</p>
+
+<blockquote><p>Service Bus Gateway service failed to start, retry count 3.
+Exception message: An error occurred creating the configuration section handler for namespacePolicyDataStoreFactory:
+Could not load file or assembly &lsquo;Microsoft.Cloud.Common.AzureStorage, Version=2.1.0.0, Culture=neutral, PublicKeyToken=4fe77f22fa8374f3&rsquo; or one of its dependencies.</p></blockquote>
+
+<p>After some searching I stumbled upon this <a href="https://github.com/matthewcanty/Microsoft.Cloud.Common.AzureStorage.FAKE.dll">GitHub repo</a>.
+Apparently, if you install VS2015 you will run into a missing DLL problem because
+Service Bus for Windows does not ship with this assembly. Normally this isn&rsquo;t a
+problem but a change to mscorlib now causes the assembly to be loaded even though
+the code is not actually used.</p>
+
+<p>The solution is to install a fake version of the dll which contains the types
+that are being loaded. I&rsquo;m not terribly excited about registering some random
+person&rsquo;s dlls into my system but I disassembled the fake assembly and it truly
+does created a single empty class to get around a type reference issue. Because
+the type isn&rsquo;t actually <em>used</em> the lack of implementation is not an issue.</p>
+
+<p>I downloaded and installed the dll as described in the repo and Service Bus
+services were up and running.</p>
+
+<h2><a name="hello-world"></a>Hello World?</h2>
+
+<p>Service Bus is running, you&rsquo;ve created a namespace, we should be able to try getting
+two processes passing messages, right? Well, maybe.</p>
+
+<p>It was during my &lsquo;hello world&rsquo; testing that I ran into the most concerning of
+the issues with setting up a local Service Bus as a dev time replacement for Azure.</p>
+
+<p>I followed the typical Service Bus examples and was met with an exception:</p>
+
+<blockquote><p>The remote server returned an error: (400) Bad Request. The api-version in the query string is not supported. Either remove it from the Uri or use one of &lsquo;201 2-03,2012-08,2013-04,2013-07&rsquo;</p></blockquote>
+
+<p>When you communicate with Service Bus you will typically install the Nuget
+package WindowsAzure.ServiceBus. Service Bus uses a numbered API version that
+is verified on connection. It seems Service Bus for Windows 1.1 is pretty out of
+date compared to what is available in Azure proper. I was forced to downgrade
+the WindowsAzure.ServiceBus package all the way back to 2.1.4.0 before I could
+establish a connection with my local Bus.</p>
+
+<p>I&rsquo;m not sure what the ramifications will be to using such an old version of the
+Service Bus API when it comes time to deploy my app into Azure. Documentation
+says the Azure instance supports all the client versions back to the beginning
+of time so presumably if I&rsquo;m not trying to use any of the fancy new features I
+should be okay but time will tell.</p>
+
+<p>I look forward to when Microsoft publishes a new on-prem Service Bus that more
+closely matches what is actually running in Azure.</p>
+
+<h2><a name="certificates"></a>Certificate Fun</h2>
+
+<p>If you got as far as getting Service Bus running and installed the right client
+libraries and were met with TLS/SSL security errors you&rsquo;ve probably run into
+an issue of certificates.</p>
+
+<blockquote><p>System.UnauthorizedAccessException was unhandled
+Message: An unhandled exception of type &lsquo;System.UnauthorizedAccessException&rsquo; occurred in Microsoft.ServiceBus.dll
+Additional information: The token provider was unable to provide a security token while accessing &lsquo;<a href="https://localhost:9355/yournamespace/$STS/Windows/">https://localhost:9355/yournamespace/$STS/Windows/</a>&rsquo;. Token provider returned message: &lsquo;The underlying connection was closed: Could not establish trust relationship for the SSL/TLS secure channel.&rsquo;.</p></blockquote>
+
+<p>When you add your machine as a Service Bus host with <code>New-SBHost</code>, the
+configuration script will generate new SSL certificates for your machine. These
+certificates will be tied to your hostname and if you are on a domain I think
+they are actually made for you fully qualified domain name. This means that you
+cannot use other names (like localhost) to connect to your Service Bus. The
+certificate names won&rsquo;t match and the trust connection will fail.</p>
+
+<h2><a name="conclusion"></a>Conclusion</h2>
+
+<p>Running Service Bus locally for dev is possible but not without configuration
+annoyances. I haven&rsquo;t used it enough to know if there are any actual draw backs
+once you have it working and it comes time to deploy to Azure. Perhaps another
+post will provide some followup.</p>
+
+<p>Things you&rsquo;ll need to be aware of for local Service Bus installation:</p>
+
+<ul>
+<li>If you are in a workgroup you must use local users, if you are in a
+domain you must use domain users. If you are on Windows 10 with an AAD user
+your machine is probably in a workgroup. <a href="https://msdn.microsoft.com/en-us/library/dn441409.aspx">reference</a></li>
+<li>If you have VS 2015, you need to install a <a href="https://github.com/matthewcanty/Microsoft.Cloud.Common.AzureStorage.FAKE.dll">fake Microsoft.Cloud.Common.AzureStorage</a>
+assembly.</li>
+<li>You must use Nuget package WindowsAzure.ServiceBus 2.1.4.0 or <em>older</em>.</li>
+<li>You must address your Service Bus connections using your full machine name
+not a short name or something like localhost</li>
+</ul>
+
+
+<p>Hopefully this saves someone hours of frustration.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Curtis Badke</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-10-18T07:40:14-06:00'><span class='date'>October 18, 2015</span> <span class='time'>7:40 am</span></time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="https://curtisbadke.ca/blog/2015/10/18/fun-with-installing-service-bus-for-windows/" data-via="cbadkidrun" data-counturl="https://curtisbadke.ca/blog/2015/10/18/fun-with-installing-service-bus-for-windows/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/07/31/who-wrote-this-sh-star-t/" title="Previous Post: Who wrote this Sh*t?">&laquo; Who wrote this Sh*t?</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/10/18/fun-with-installing-service-bus-for-windows/">Fun With Installing Service Bus for Windows</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/31/who-wrote-this-sh-star-t/">Who Wrote This Sh*t?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/12/make-it-happen-part-deux/">Make It Happen – Part Deux</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/10/make-it-happen/">Make It Happen!</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/">Adventures With PowerShell: Episode 1 – 64 vs 32 Bit</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Contact</h1>
+  <ul id="recent_posts">
+      <li class="post">
+        <a href="https://twitter.com/cbadkidrun">@cbadkidrun</a>
+      </li>
+      <li class="post">
+        <a href="https://github.com/cbadke">GitHub</a>
+      </li>
+      <li class="post">
+        <a href="mailto:me@curtisbadke.ca">me@curtisbadke.ca</a>
+      </li>
+  </ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - Curtis Badke -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

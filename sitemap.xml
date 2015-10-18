@@ -1,62 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://cbadke.github.io/blog/2014/07/31/who-wrote-this-sh-star-t/</loc>
+    <loc>https://curtisbadke.ca/blog/2015/10/18/fun-with-installing-service-bus-for-windows/</loc>
+    <lastmod>2015-10-18T07:40:14-06:00</lastmod>
+  </url>
+  <url>
+    <loc>https://curtisbadke.ca/blog/2014/07/31/who-wrote-this-sh-star-t/</loc>
     <lastmod>2014-07-31T11:39:33-06:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://cbadke.github.io/blog/2013/02/12/make-it-happen-part-deux/</loc>
+    <loc>https://curtisbadke.ca/blog/2013/02/12/make-it-happen-part-deux/</loc>
     <lastmod>2013-02-12T10:21:37-07:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://cbadke.github.io/blog/2013/02/10/make-it-happen/</loc>
+    <loc>https://curtisbadke.ca/blog/2013/02/10/make-it-happen/</loc>
     <lastmod>2013-02-10T10:17:02-07:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://cbadke.github.io/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/</loc>
+    <loc>https://curtisbadke.ca/blog/2013/02/09/adventures-with-powershell-episode-1-64-vs-32-bit/</loc>
     <lastmod>2013-02-09T08:05:05-07:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://cbadke.github.io/blog/2012/04/29/zombies-run/</loc>
+    <loc>https://curtisbadke.ca/blog/2012/04/29/zombies-run/</loc>
     <lastmod>2012-04-29T08:58:52-06:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://cbadke.github.io/blog/2011/12/16/ncrunch-is-awesome/</loc>
+    <loc>https://curtisbadke.ca/blog/2011/12/16/ncrunch-is-awesome/</loc>
     <lastmod>2011-12-16T07:55:53-07:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://cbadke.github.io/blog/2011/12/13/are-checklists-bad/</loc>
+    <loc>https://curtisbadke.ca/blog/2011/12/13/are-checklists-bad/</loc>
     <lastmod>2011-12-13T20:48:22-07:00</lastmod>
-    <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://cbadke.github.io/blog/archives/</loc>
-    <lastmod>2014-11-24T21:10:45-07:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://curtisbadke.ca/blog/archives/</loc>
   </url>
   <url>
-    <loc>http://cbadke.github.io/</loc>
-    <lastmod>2014-11-24T21:10:45-07:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://curtisbadke.ca/</loc>
   </url>
   <url>
-    <loc>http://cbadke.github.io/about/</loc>
-    <lastmod>2014-11-24T21:10:45-07:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://curtisbadke.ca/about/</loc>
   </url>
   <url>
-    <loc>http://cbadke.github.io/pair/</loc>
-    <lastmod>2014-11-24T21:10:45-07:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://curtisbadke.ca/pair/</loc>
+  </url>
+  <url>
+    <loc>https://curtisbadke.ca/blog/categories/process/</loc>
+  </url>
+  <url>
+    <loc>https://curtisbadke.ca/blog/categories/c-number/</loc>
+  </url>
+  <url>
+    <loc>https://curtisbadke.ca/blog/categories/testing/</loc>
+  </url>
+  <url>
+    <loc>https://curtisbadke.ca/blog/categories/visual-studio/</loc>
+  </url>
+  <url>
+    <loc>https://curtisbadke.ca/blog/categories/fitness/</loc>
+  </url>
+  <url>
+    <loc>https://curtisbadke.ca/blog/categories/powershell/</loc>
   </url>
 </urlset>

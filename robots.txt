@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://cbadke.github.io/sitemap.xml 
+Sitemap: https://curtisbadke.ca/sitemap.xml 
