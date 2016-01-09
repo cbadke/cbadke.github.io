@@ -33,7 +33,7 @@ My machine:
 Installing Service Bus itself is easy. Just use the Microsoft Web Platform
 Installer. Search for 'Service Bus' and install 'Windows Azure Pack: Service Bus 1.1'.
 
-![Search for Service Bus in Platform Installer](/images/2015-10-18/search-results.png)
+![Search for Service Bus in Platform Installer](/images/blog/2015-10-18/search-results.png)
 
 ## Farm Creation
 
